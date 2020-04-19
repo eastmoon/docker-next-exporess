@@ -1,0 +1,35 @@
+# Docker-Compose document
+# Ref : https://docs.docker.com/compose/compose-file/
+
+version: "3"
+services:
+  app:
+    build: ./dockerfile/node
+    image: node:${TAG}
+    container_name: node_service_${TAG}
+    depends_on:
+      - db
+    ports:
+      - "8080:80"
+    environment:
+      - DOCKER_MODE=dev
+    volumes:
+      - ../node/:/repo/
+    networks:
+      - service_network
+
+  db:
+    build: ./dockerfile/mongo
+    image: mongo:${TAG}
+    container_name: mongo_service_${TAG}
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - ../:/repo/
+    networks:
+      - service_network
+
+networks:
+  service_network:
+    driver: bridge
